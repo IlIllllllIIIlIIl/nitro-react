@@ -11,6 +11,14 @@
     width: 100%;
     overflow: hidden;
 
+    @media (sm) {
+        display: flex;
+        position: absolute;
+        bottom: 70px;
+        left: calc(100% / 3);
+        width: 200px;
+    }
+
     @include media-breakpoint-down(sm) {
         display: flex;
         position: absolute;
@@ -41,8 +49,8 @@
         &::after,
         input,
         textarea {
-            width: auto;
-            min-width: 1em;
+            width: 30vw;
+            min-width: 13em;
             grid-area: 1 / 2;
             margin: 0;
             resize: none;

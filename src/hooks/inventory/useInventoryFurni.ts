@@ -1,13 +1,14 @@
 import { FurnitureListAddOrUpdateEvent, FurnitureListComposer, FurnitureListEvent, FurnitureListInvalidateEvent, FurnitureListItemParser, FurnitureListRemovedEvent, FurniturePostItPlacedEvent } from '@nitrots/nitro-renderer';
 import { useEffect, useState } from 'react';
 import { useBetween } from 'use-between';
-import { addFurnitureItem, attemptItemPlacement, cancelRoomObjectPlacement, CloneObject, CreateLinkEvent, DispatchUiEvent, FurnitureItem, getAllItemIds, getPlacingItemId, GroupItem, mergeFurniFragments, SendMessageComposer, UnseenItemCategory } from '../../api';
+import { addFurnitureItem, attemptItemPlacement, cancelRoomObjectPlacement, CreateLinkEvent, DispatchUiEvent, FurnitureItem, getAllItemIds, getPlacingItemId, GroupItem, mergeFurniFragments, SendMessageComposer, UnseenItemCategory } from '../../api';
 import { InventoryFurniAddedEvent } from '../../events';
 import { useMessageEvent } from '../events';
 import { useSharedVisibility } from '../useSharedVisibility';
 import { useInventoryUnseenTracker } from './useInventoryUnseenTracker';
 
 let furniMsgFragments: Map<number, FurnitureListItemParser>[] = null;
+let pendingUpdates = new Map<number, FurnitureItem>();
 
 const useInventoryFurniState = () =>
 {
@@ -59,58 +60,39 @@ const useInventoryFurniState = () =>
         setGroupItems(prevValue =>
         {
             const newValue = [ ...prevValue ];
-
+            
             for(const item of parser.items)
             {
-                let i = 0;
-                let groupItem: GroupItem = null;
+                const furnitureItem = new FurnitureItem(item);
+                
+                pendingUpdates.set(furnitureItem.id, furnitureItem);
+                
+                const existingGroup = newValue.find(group => group.type === furnitureItem.type && 
+                    group.category === furnitureItem.category);
 
-                while(i < newValue.length)
+                if(existingGroup)
                 {
-                    const group = newValue[i];
-
-                    let j = 0;
-
-                    while(j < group.items.length)
+                    for(const [id, pendingItem] of pendingUpdates)
                     {
-                        const furniture = group.items[j];
-
-                        if(furniture.id === item.itemId)
+                        if(pendingItem.type === furnitureItem.type && 
+                           pendingItem.category === furnitureItem.category)
                         {
-                            furniture.update(item);
-
-                            const newFurniture = [ ...group.items ];
-
-                            newFurniture[j] = furniture;
-
-                            group.items = newFurniture;
-
-                            groupItem = group;
-
-                            break;
+                            const existingItem = existingGroup.getItemById(id);
+                            if(!existingItem)
+                            {
+                                existingGroup.push(pendingItem);
+                                existingGroup.hasUnseenItems = isUnseen(UnseenItemCategory.FURNI, id);
+                                DispatchUiEvent(new InventoryFurniAddedEvent(id, pendingItem.type, pendingItem.category));
+                            }
+                            pendingUpdates.delete(id);
                         }
-
-                        j++
                     }
-
-                    if(groupItem) break;
-
-                    i++;
-                }
-
-                if(groupItem)
-                {
-                    groupItem.hasUnseenItems = true;
-
-                    newValue[i] = CloneObject(groupItem);
                 }
                 else
                 {
-                    const furniture = new FurnitureItem(item);
-
-                    addFurnitureItem(newValue, furniture, isUnseen(UnseenItemCategory.FURNI, item.itemId));
-
-                    DispatchUiEvent(new InventoryFurniAddedEvent(furniture.id, furniture.type, furniture.category));
+                    addFurnitureItem(newValue, furnitureItem, isUnseen(UnseenItemCategory.FURNI, item.itemId));
+                    DispatchUiEvent(new InventoryFurniAddedEvent(furnitureItem.id, furnitureItem.type, furnitureItem.category));
+                    pendingUpdates.delete(furnitureItem.id);
                 }
             }
 
@@ -185,7 +167,6 @@ const useInventoryFurniState = () =>
                 addFurnitureItem(newValue, item, isUnseen(UnseenItemCategory.FURNI, itemId));
 
                 DispatchUiEvent(new InventoryFurniAddedEvent(item.id, item.type, item.category));
-
             }
 
             return newValue;
@@ -265,23 +246,11 @@ const useInventoryFurniState = () =>
 
     useEffect(() =>
     {
-        if(!isVisible) return;
-
-        return () =>
+        if(!isVisible)
         {
-            if(resetCategory(UnseenItemCategory.FURNI))
-            {
-                setGroupItems(prevValue =>
-                {
-                    const newValue = [ ...prevValue ];
-        
-                    for(const newGroup of newValue) newGroup.hasUnseenItems = false;
-        
-                    return newValue;
-                });
-            }
+            pendingUpdates.clear();
         }
-    }, [ isVisible, resetCategory ]);
+    }, [isVisible]);
 
     useEffect(() =>
     {

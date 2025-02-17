@@ -1,15 +1,17 @@
 import { ILinkEventTracker } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { AddEventLinkTracker, ChatEntryType, LocalizeText, RemoveLinkEventTracker } from '../../api';
-import { Flex, InfiniteScroll, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../common';
+import { Flex, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../common';
 import { useChatHistory } from '../../hooks';
 
 export const ChatHistoryView: FC<{}> = props =>
 {
     const [ isVisible, setIsVisible ] = useState(false);
     const [ searchText, setSearchText ] = useState<string>('');
+    const scrollRef = useRef<HTMLDivElement>(null);
     const { chatHistory = [] } = useChatHistory();
     const elementRef = useRef<HTMLDivElement>(null);
+    const autoScroll = useRef<boolean>(true);
 
     const filteredChatHistory = useMemo(() => 
     {
@@ -20,10 +22,23 @@ export const ChatHistoryView: FC<{}> = props =>
         return chatHistory.filter(entry => ((entry.message && entry.message.toLowerCase().includes(text))) || (entry.name && entry.name.toLowerCase().includes(text)));
     }, [ chatHistory, searchText ]);
 
-    useEffect(() =>
-    {
-        if(elementRef && elementRef.current && isVisible) elementRef.current.scrollTop = elementRef.current.scrollHeight;
-    }, [ isVisible ]);
+    const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+        const div = event.currentTarget;
+        const isAtBottom = div.scrollHeight - div.clientHeight - div.scrollTop < 20;
+        autoScroll.current = isAtBottom;
+    };
+
+    useEffect(() => {
+        if (autoScroll.current && scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [filteredChatHistory]);
+
+    useEffect(() => {
+        if (isVisible && scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [isVisible]);
 
     useEffect(() =>
     {
@@ -62,10 +77,20 @@ export const ChatHistoryView: FC<{}> = props =>
             <NitroCardHeaderView headerText={ LocalizeText('room.chathistory.button.text') } onCloseClick={ event => setIsVisible(false) }/>
             <NitroCardContentView innerRef={ elementRef } overflow="hidden" gap={ 2 }>
                 <input type="text" className="form-control form-control-sm" placeholder={ LocalizeText('generic.search') } value={ searchText } onChange={ event => setSearchText(event.target.value) } />
-                <InfiniteScroll rows={ filteredChatHistory } scrollToBottom={ true } rowRender={ row =>
-                {
-                    return (
-                        <Flex alignItems="center" className="p-1" gap={ 2 }>
+                <div 
+                    ref={scrollRef}
+                    style={{ 
+                        overflowY: 'auto',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        padding: '8px'
+                    }}
+                    onScroll={handleScroll}
+                >
+                    {filteredChatHistory.map((row, index) => (
+                        <Flex key={index} alignItems="center" className="p-1 history" gap={ 2 }>
                             <Text variant="muted">{ row.timestamp }</Text>
                             { (row.type === ChatEntryType.TYPE_CHAT) &&
                                 <div className="bubble-container" style={ { position: 'relative' } }>
@@ -74,7 +99,7 @@ export const ChatHistoryView: FC<{}> = props =>
                                     <div className={ `chat-bubble bubble-${ row.style } type-${ row.chatType }` } style={ { maxWidth: '100%' } }>
                                         <div className="user-container">
                                             { row.imageUrl && (row.imageUrl.length > 0) &&
-                                <div className="user-image" style={ { backgroundImage: `url(${ row.imageUrl })` } } /> }
+                                                <div className="user-image" style={ { backgroundImage: `url(${ row.imageUrl })` } } /> }
                                         </div>
                                         <div className="chat-content">
                                             <b className="username mr-1" dangerouslySetInnerHTML={ { __html: `${ row.name }: ` } } />
@@ -88,8 +113,8 @@ export const ChatHistoryView: FC<{}> = props =>
                                     <Text textBreak wrap grow>{ row.name }</Text>
                                 </> }
                         </Flex>
-                    )
-                } } />
+                    ))}
+                </div>
             </NitroCardContentView>
         </NitroCardView>
     );

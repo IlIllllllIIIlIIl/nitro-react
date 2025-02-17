@@ -6,6 +6,7 @@ import { useInventoryTrade, useInventoryUnseenTracker, useMessageEvent, useRoomE
 import { InventoryBadgeView } from './views/badge/InventoryBadgeView';
 import { InventoryBotView } from './views/bot/InventoryBotView';
 import { InventoryFurnitureView } from './views/furniture/InventoryFurnitureView';
+import { InventorySearchProvider } from './views/furniture/InventorySearchContext';
 import { InventoryTradeView } from './views/furniture/InventoryTradeView';
 import { InventoryPetView } from './views/pet/InventoryPetView';
 
@@ -118,35 +119,37 @@ export const InventoryView: FC<{}> = props =>
     if(!isVisible) return null;
 
     return (
-        <NitroCardView uniqueKey={ 'inventory' } className="nitro-inventory" theme={ isTrading ? 'primary-slim' : '' } >
-            <NitroCardHeaderView headerText={ LocalizeText('inventory.title') } onCloseClick={ onClose } />
-            { !isTrading &&
-                <>
-                    <NitroCardTabsView>
-                        { TABS.map((name, index) =>
-                        {
-                            return (
-                                <NitroCardTabsItemView key={ index } isActive={ (currentTab === name) } onClick={ event => setCurrentTab(name) } count={ getCount(UNSEEN_CATEGORIES[index]) }>
-                                    { LocalizeText(name) }
-                                </NitroCardTabsItemView>
-                            );
-                        }) }
-                    </NitroCardTabsView>
+        <InventorySearchProvider>
+            <NitroCardView uniqueKey={ 'inventory' } className="nitro-inventory" theme={ isTrading ? 'primary-slim' : '' } >
+                <NitroCardHeaderView headerText={ LocalizeText('inventory.title') } onCloseClick={ onClose } />
+                { !isTrading &&
+                    <>
+                        <NitroCardTabsView>
+                            { TABS.map((name, index) =>
+                            {
+                                return (
+                                    <NitroCardTabsItemView key={ index } isActive={ (currentTab === name) } onClick={ event => setCurrentTab(name) } count={ getCount(UNSEEN_CATEGORIES[index]) }>
+                                        { LocalizeText(name) }
+                                    </NitroCardTabsItemView>
+                                );
+                            }) }
+                        </NitroCardTabsView>
+                        <NitroCardContentView>
+                            { (currentTab === TAB_FURNITURE ) &&
+                                <InventoryFurnitureView roomSession={ roomSession } roomPreviewer={ roomPreviewer } /> }
+                            { (currentTab === TAB_BOTS ) &&
+                                <InventoryBotView roomSession={ roomSession } roomPreviewer={ roomPreviewer } /> }
+                            { (currentTab === TAB_PETS ) && 
+                                <InventoryPetView roomSession={ roomSession } roomPreviewer={ roomPreviewer } /> }
+                            { (currentTab === TAB_BADGES ) && 
+                                <InventoryBadgeView /> }
+                        </NitroCardContentView>
+                    </> }
+                { isTrading &&
                     <NitroCardContentView>
-                        { (currentTab === TAB_FURNITURE ) &&
-                            <InventoryFurnitureView roomSession={ roomSession } roomPreviewer={ roomPreviewer } /> }
-                        { (currentTab === TAB_BOTS ) &&
-                            <InventoryBotView roomSession={ roomSession } roomPreviewer={ roomPreviewer } /> }
-                        { (currentTab === TAB_PETS ) && 
-                            <InventoryPetView roomSession={ roomSession } roomPreviewer={ roomPreviewer } /> }
-                        { (currentTab === TAB_BADGES ) && 
-                            <InventoryBadgeView /> }
-                    </NitroCardContentView>
-                </> }
-            { isTrading &&
-                <NitroCardContentView>
-                    <InventoryTradeView cancelTrade={ onClose } />
-                </NitroCardContentView> }
-        </NitroCardView>
+                        <InventoryTradeView cancelTrade={ onClose } />
+                    </NitroCardContentView> }
+            </NitroCardView>
+        </InventorySearchProvider>
     );
 }

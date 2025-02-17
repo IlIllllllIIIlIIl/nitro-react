@@ -7,6 +7,7 @@ import { useInventoryFurni, useInventoryUnseenTracker } from '../../../../hooks'
 import { InventoryCategoryEmptyView } from '../InventoryCategoryEmptyView';
 import { InventoryFurnitureItemView } from './InventoryFurnitureItemView';
 import { InventoryFurnitureSearchView } from './InventoryFurnitureSearchView';
+import { InventorySearchProvider, useInventorySearch } from './InventorySearchContext';
 
 interface InventoryFurnitureViewProps
 {
@@ -32,6 +33,7 @@ export const InventoryFurnitureView: FC<InventoryFurnitureViewProps> = props =>
     const [ filteredGroupItems, setFilteredGroupItems ] = useState<GroupItem[]>([]);
     const { groupItems = [], selectedItem = null, activate = null, deactivate = null } = useInventoryFurni();
     const { resetItems = null } = useInventoryUnseenTracker();
+    const { searchValue, setSearchValue } = useInventorySearch();
 
     useEffect(() =>
     {
@@ -108,39 +110,78 @@ export const InventoryFurnitureView: FC<InventoryFurnitureViewProps> = props =>
         return () => setIsVisible(false);
     }, []);
 
+    useEffect(() =>
+    {
+        const filterItems = () => {
+            if(!groupItems) return;
+
+            let filteredItems = [ ...groupItems ];
+
+            if(searchValue && searchValue.length)
+            {
+                const comparison = searchValue.toLocaleLowerCase();
+
+                filteredItems = groupItems.filter(item =>
+                {
+                    if(item && item.name)
+                    {
+                        return item.name.toLocaleLowerCase().includes(comparison);
+                    }
+                    return false;
+                });
+            }
+
+            setFilteredGroupItems(filteredItems);
+        };
+
+        filterItems();
+
+        const timer = setTimeout(filterItems, 100);
+
+        return () => clearTimeout(timer);
+    }, [groupItems, searchValue]);
+
     if(!groupItems || !groupItems.length) return <InventoryCategoryEmptyView title={ LocalizeText('inventory.empty.title') } desc={ LocalizeText('inventory.empty.desc') } />;
 
     return (
-        <Grid>
-            <Column size={ 7 } overflow="hidden">
-                <InventoryFurnitureSearchView groupItems={ groupItems } setGroupItems={ setFilteredGroupItems } />
-                <AutoGrid columnCount={ 5 }>
-                    { filteredGroupItems && (filteredGroupItems.length > 0) && filteredGroupItems.map((item, index) => <InventoryFurnitureItemView key={ index } groupItem={ item } />) }
-                </AutoGrid>
-            </Column>
-            <Column size={ 5 } overflow="auto">
-                <Column overflow="hidden" position="relative">
-                    <LayoutRoomPreviewerView roomPreviewer={ roomPreviewer } height={ 140 } />
-                    { selectedItem && selectedItem.stuffData.isUnique &&
-                        <LayoutLimitedEditionCompactPlateView className="top-2 end-2" position="absolute" uniqueNumber={ selectedItem.stuffData.uniqueNumber } uniqueSeries={ selectedItem.stuffData.uniqueSeries } /> }
-                    { (selectedItem && selectedItem.stuffData.rarityLevel > -1) &&
-                        <LayoutRarityLevelView className="top-2 end-2" position="absolute" level={ selectedItem.stuffData.rarityLevel } /> }
+        <InventorySearchProvider context="inventory">
+            <Grid>
+                <Column size={ 7 } overflow="hidden">
+                    <InventoryFurnitureSearchView 
+                        searchValue={searchValue} 
+                        setSearchValue={setSearchValue}
+                        context="inventory"
+                    />
+                    <AutoGrid columnCount={ 5 }>
+                        { filteredGroupItems && (filteredGroupItems.length > 0) && filteredGroupItems.map((item, index) => 
+                            <InventoryFurnitureItemView key={ index } groupItem={ item } />
+                        ) }
+                    </AutoGrid>
                 </Column>
-                { selectedItem &&
-                    <Column grow justifyContent="between" gap={ 2 }>
-                        <Text grow truncate>{ selectedItem.name }</Text>
-                        <Column gap={ 1 }>
-                            { !!roomSession &&
-                                <Button variant="success" onClick={ event => attemptItemPlacement(selectedItem) }>
-                                    { LocalizeText('inventory.furni.placetoroom') }
-                                </Button> }
-                            { (selectedItem && selectedItem.isSellable) &&
-                                <Button onClick={ event => attemptPlaceMarketplaceOffer(selectedItem) }>
-                                    { LocalizeText('inventory.marketplace.sell') }
-                                </Button> }
-                        </Column>
-                    </Column> }
-            </Column>
-        </Grid>
+                <Column size={ 5 } overflow="auto">
+                    <Column overflow="hidden" position="relative">
+                        <LayoutRoomPreviewerView roomPreviewer={ roomPreviewer } height={ 140 } />
+                        { selectedItem && selectedItem.stuffData.isUnique &&
+                            <LayoutLimitedEditionCompactPlateView className="top-2 end-2" position="absolute" uniqueNumber={ selectedItem.stuffData.uniqueNumber } uniqueSeries={ selectedItem.stuffData.uniqueSeries } /> }
+                        { (selectedItem && selectedItem.stuffData.rarityLevel > -1) &&
+                            <LayoutRarityLevelView className="top-2 end-2" position="absolute" level={ selectedItem.stuffData.rarityLevel } /> }
+                    </Column>
+                    { selectedItem &&
+                        <Column grow justifyContent="between" gap={ 2 }>
+                            <Text grow truncate>{ selectedItem.name }</Text>
+                            <Column gap={ 1 }>
+                                { !!roomSession &&
+                                    <Button variant="success" onClick={ event => attemptItemPlacement(selectedItem) }>
+                                        { LocalizeText('inventory.furni.placetoroom') }
+                                    </Button> }
+                                { (selectedItem && selectedItem.isSellable) &&
+                                    <Button onClick={ event => attemptPlaceMarketplaceOffer(selectedItem) }>
+                                        { LocalizeText('inventory.marketplace.sell') }
+                                    </Button> }
+                            </Column>
+                        </Column> }
+                </Column>
+            </Grid>
+        </InventorySearchProvider>
     );
 }
