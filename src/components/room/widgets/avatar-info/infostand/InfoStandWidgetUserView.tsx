@@ -147,7 +147,19 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
                                 </Flex>
                                 <Flex center pointer={ ( avatarInfo.groupId > 0) } className="badge-image" onClick={ event => GetGroupInformation(avatarInfo.groupId) }>
                                     { avatarInfo.groupId > 0 &&
-                                        <LayoutBadgeImageView badgeCode={ avatarInfo.groupBadgeId } isGroup={ true } showInfo={ true } customTitle={ avatarInfo.groupName } /> }
+                                        <Flex center pointer className="badge-image" onClick={ event => GetGroupInformation(avatarInfo.groupId) }>
+                                            <LayoutBadgeImageView
+                                                badgeCode={ avatarInfo.groupBadgeId }
+                                                isGroup={ true }
+                                                showInfo={ true }
+                                                customTitle={ avatarInfo.groupName }
+                                                style={{
+                                                    backgroundImage: `url(https://i.hubba.cc/badge/${avatarInfo.groupBadgeId}.gif)`,
+                                                    width: '40px',
+                                                    height: '40px'
+                                                }}
+                                            />
+                                        </Flex> }
                                 </Flex>
                             </Flex>
                             <Flex center gap={ 1 }>
