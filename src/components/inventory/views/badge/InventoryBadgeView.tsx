@@ -7,6 +7,7 @@ import { InventoryBadgeItemView } from './InventoryBadgeItemView';
 export const InventoryBadgeView: FC<{}> = props =>
 {
     const [ isVisible, setIsVisible ] = useState(false);
+    const [ searchQuery, setSearchQuery ] = useState('');
     const { badgeCodes = [], activeBadgeCodes = [], selectedBadgeCode = null, isWearingBadge = null, canWearBadges = null, toggleBadge = null, getBadgeId = null, activate = null, deactivate = null } = useInventoryBadges();
     const { isUnseen = null, removeUnseen = null } = useInventoryUnseenTracker();
 
@@ -36,13 +37,24 @@ export const InventoryBadgeView: FC<{}> = props =>
     return (
         <Grid>
             <Column size={ 7 } overflow="hidden">
+                <div className="input-group mb-2">
+                    <input 
+                        type="text" 
+                        className="form-control form-control-sm" 
+                        placeholder={ LocalizeText('generic.search') } 
+                        value={ searchQuery } 
+                        onChange={ event => setSearchQuery(event.target.value) }
+                    />
+                </div>
                 <AutoGrid columnCount={ 4 }>
-                    { badgeCodes && (badgeCodes.length > 0) && badgeCodes.map((badgeCode, index) =>
-                    {
-                        if(isWearingBadge(badgeCode)) return null;
+                    { badgeCodes && (badgeCodes.length > 0) && badgeCodes
+                        .filter(badgeCode => !searchQuery || LocalizeBadgeName(badgeCode).toLowerCase().includes(searchQuery.toLowerCase()))
+                        .map((badgeCode, index) =>
+                        {
+                            if(isWearingBadge(badgeCode)) return null;
 
-                        return <InventoryBadgeItemView key={ index } badgeCode={ badgeCode } />
-                    }) }
+                            return <InventoryBadgeItemView key={ index } badgeCode={ badgeCode } />
+                        }) }
                 </AutoGrid>
             </Column>
             <Column className="justify-content-between" size={ 5 } overflow="auto">
