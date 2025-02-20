@@ -116,15 +116,7 @@ export const GroupRoomInformationView: FC<{}> = props =>
                     <>
                         <Flex pointer alignItems="center" gap={ 2 } onClick={ event => GetGroupInformation(groupInformation.id) }>
                             <Base className="group-badge">
-                                <LayoutBadgeImageView
-                                    badgeCode={ groupInformation.badge }
-                                    isGroup={ true }
-                                    style={{
-                                        backgroundImage: `url(https://i.hubba.cc/badge/${groupInformation.badge}.gif)`,
-                                        width: '40px',
-                                        height: '40px'
-                                    }}
-                                />
+                                <LayoutBadgeImageView badgeCode={ groupInformation.badge } isGroup={ true } />
                             </Base>
                             <Text variant="white">{ groupInformation.title }</Text>
                         </Flex>

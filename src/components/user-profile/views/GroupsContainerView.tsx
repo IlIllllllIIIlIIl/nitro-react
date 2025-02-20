@@ -75,15 +75,7 @@ export const GroupsContainerView: FC<GroupsContainerViewProps> = props =>
                             <LayoutGridItem key={ index } overflow="unset" itemActive={ (selectedGroupId === group.groupId) } onClick={ () => setSelectedGroupId(group.groupId) } className="p-1">
                                 { itsMe &&
                                 <i className={ 'position-absolute end-0 top-0 z-index-1 icon icon-group-' + (group.favourite ? 'favorite' : 'not-favorite') } onClick={ () => ToggleFavoriteGroup(group) } /> }
-                                <LayoutBadgeImageView
-                                    badgeCode={ group.badgeCode }
-                                    isGroup={ true }
-                                    style={{
-                                        backgroundImage: `url(https://i.hubba.cc/badge/${group.badgeCode}.gif)`,
-                                        width: '40px',
-                                        height: '40px'
-                                    }}
-                                />
+                                <LayoutBadgeImageView badgeCode={ group.badgeCode } isGroup={ true } />
                             </LayoutGridItem>
                         )
                     }) }
