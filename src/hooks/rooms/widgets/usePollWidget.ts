@@ -13,6 +13,12 @@ const usePollWidgetState = () =>
 
     const answerPoll = (pollId: number, questionId: number, answers: string[]) => roomSession.sendPollAnswerMessage(pollId, questionId, answers);
 
+    const endPoll = (pollId: number) => {
+        const clearEvent = new RoomWidgetPollUpdateEvent(RoomWidgetPollUpdateEvent.CONTENT, pollId);
+        clearEvent.questionArray = null;
+        DispatchUiEvent(clearEvent);
+    };
+
     useRoomSessionManagerEvent<RoomSessionPollEvent>(RoomSessionPollEvent.OFFER, event =>
     {
         const pollEvent = new RoomWidgetPollUpdateEvent(RoomWidgetPollUpdateEvent.OFFER, event.id);
@@ -46,7 +52,7 @@ const usePollWidgetState = () =>
         DispatchUiEvent(pollEvent);
     });
 
-    return { startPoll, rejectPoll, answerPoll };
+    return { startPoll, rejectPoll, answerPoll, endPoll };
 }
 
 export const usePollWidget = usePollWidgetState;

@@ -5,7 +5,7 @@ import { useRoomSessionManagerEvent } from '../../events';
 import { useRoom } from '../useRoom';
 import { usePollWidget } from './usePollWidget';
 
-const DEFAULT_DISPLAY_DELAY = 4000;
+const DEFAULT_DISPLAY_DELAY = 10000;
 const SIGN_FADE_DELAY = 3;
 
 const useWordQuizWidgetState = () =>
@@ -13,7 +13,6 @@ const useWordQuizWidgetState = () =>
     const [ pollId, setPollId ] = useState(-1);
     const [ question, setQuestion ] = useState<IQuestion>(null);
     const [ answerSent, setAnswerSent ] = useState(false);
-    const [ questionClearTimeout, setQuestionClearTimeout ] = useState<ReturnType<typeof setTimeout>>(null);
     const [ answerCounts, setAnswerCounts ] = useState<Map<string, number>>(new Map());
     const [ userAnswers, setUserAnswers ] = useState<Map<number, VoteValue>>(new Map());
     const { answerPoll = null } = usePollWidget();
@@ -65,13 +64,8 @@ const useWordQuizWidgetState = () =>
         {
             setAnswerCounts(event.answerCounts);
             setAnswerSent(true);
-
-            setQuestionClearTimeout(prevValue =>
-            {
-                if(prevValue) clearTimeout(prevValue);
-
-                return setTimeout(() => clearQuestion(), DEFAULT_DISPLAY_DELAY);
-            });
+            
+            setTimeout(() => clearQuestion(), DEFAULT_DISPLAY_DELAY);
         }
 
         setUserAnswers(new Map());
@@ -84,20 +78,6 @@ const useWordQuizWidgetState = () =>
         setAnswerSent(false);
         setAnswerCounts(new Map());
         setUserAnswers(new Map());
-
-        setQuestionClearTimeout(prevValue =>
-        {
-            if(prevValue) clearTimeout(prevValue);
-
-            if(event.duration > 0)
-            {
-                const delay = event.duration < 1000 ? DEFAULT_DISPLAY_DELAY : event.duration;
-
-                return setTimeout(() => clearQuestion(), delay);
-            }
-
-            return null;
-        });
     });
 
     useEffect(() =>
@@ -128,19 +108,6 @@ const useWordQuizWidgetState = () =>
         const interval = setInterval(() => checkSignFade(), 1000);
 
         return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() =>
-    {
-        return () =>
-        {
-            setQuestionClearTimeout(prevValue =>
-            {
-                if(prevValue) clearTimeout(prevValue);
-
-                return null;
-            });
-        }
     }, []);
 
     return { question, answerSent, answerCounts, userAnswers, vote };

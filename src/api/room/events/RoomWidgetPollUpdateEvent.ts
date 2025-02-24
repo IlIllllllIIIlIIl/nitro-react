@@ -6,6 +6,7 @@ export class RoomWidgetPollUpdateEvent extends RoomWidgetUpdateEvent
     public static readonly OFFER = 'RWPUW_OFFER';
     public static readonly ERROR = 'RWPUW_ERROR';
     public static readonly CONTENT = 'RWPUW_CONTENT';
+    public static readonly FINISHED = 'RWPUW_FINISHED';
 
     private _id = -1;
     private _summary: string;
