@@ -1,0 +1,40 @@
+name: Build for production
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    # nodejs versions https://nodejs.org/en/about/releases/
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '23'
+        cache: 'yarn'
+    - run: yarn install --frozen-lockfile # optional, --immutable
+    - run: npx update-browserslist-db@latest
+    - run: yarn build:prod
+
+    - name: Archive
+      uses: thedoctor0/zip-release@0.7.5
+      with:
+        type: 'zip'
+        filename: 'release.zip'
+        path: './dist'
+        
+    - name: Release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Development Build"
+        files: |
+          release.zip
+          
