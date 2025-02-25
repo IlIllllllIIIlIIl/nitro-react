@@ -37,18 +37,10 @@ export const LayoutBadgeImageView: FC<LayoutBadgeImageViewProps> = props =>
 
         if(imageElement)
         {
-            newStyle.backgroundImage = `url(${ (isGroup) ? imageElement.src : GetConfiguration<string>('badge.asset.url').replace('%badgename%', badgeCode.toString())})`;
-            newStyle.width = imageElement.width;
-            newStyle.height = imageElement.height;
-
             if(scale !== 1)
             {
                 newStyle.transform = `scale(${ scale })`;
-
                 if(!(scale % 1)) newStyle.imageRendering = 'pixelated';
-
-                newStyle.width = (imageElement.width * scale);
-                newStyle.height = (imageElement.height * scale);
             }
         }
 
@@ -56,6 +48,25 @@ export const LayoutBadgeImageView: FC<LayoutBadgeImageViewProps> = props =>
 
         return newStyle;
     }, [ imageElement, scale, style ]);
+
+    const getImgStyle = useMemo(() =>
+    {
+        let newStyle: CSSProperties = {};
+
+        if(imageElement)
+        {
+            newStyle.width = imageElement.width;
+            newStyle.height = imageElement.height;
+
+            if(scale !== 1)
+            {
+                newStyle.width = (imageElement.width * scale);
+                newStyle.height = (imageElement.height * scale);
+            }
+        }
+
+        return newStyle;
+    }, [ imageElement, scale ]);
 
     useEffect(() =>
     {
@@ -92,6 +103,12 @@ export const LayoutBadgeImageView: FC<LayoutBadgeImageViewProps> = props =>
 
     return (
         <Base classNames={ getClassNames } style={ getStyle } { ...rest }>
+            <img
+                src={ (isGroup) ? imageElement?.src : GetConfiguration<string>('badge.asset.url').replace('%badgename%', badgeCode.toString()) }
+                style={ getImgStyle }
+                loading="lazy"
+                alt={ isGroup ? customTitle : LocalizeBadgeName(badgeCode) }
+            />
             { (showInfo && GetConfiguration<boolean>('badge.descriptions.enabled', true)) &&
                 <Base className="badge-information text-black py-1 px-2 small">
                     <div className="fw-bold mb-1">{ isGroup ? customTitle : LocalizeBadgeName(badgeCode) }</div>

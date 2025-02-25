@@ -1,5 +1,4 @@
 import { FC, useMemo } from 'react';
-import { Base } from '../Base';
 import { Column, ColumnProps } from '../Column';
 import { LayoutItemCountView } from './LayoutItemCountView';
 import { LayoutLimitedEditionStyledNumberView } from './limited-edition';
@@ -49,22 +48,33 @@ export const LayoutGridItem: FC<LayoutGridItemProps> = props =>
     {
         let newStyle = { ...style };
 
-        if(itemImage && !(itemUniqueSoldout || (itemUniqueNumber > 0))) newStyle.backgroundImage = `url(${ itemImage })`;
-
         if(itemColor) newStyle.backgroundColor = itemColor;
 
         if(Object.keys(style).length) newStyle = { ...newStyle, ...style };
 
         return newStyle;
-    }, [ style, itemImage, itemColor, itemUniqueSoldout, itemUniqueNumber ]);
+    }, [ style, itemColor ]);
 
     return (
         <Column center={ center } pointer position={ position } overflow={ overflow } column={ column } classNames={ getClassNames } style={ getStyle } { ...rest }>
+            {itemImage && !(itemUniqueSoldout || (itemUniqueNumber > 0)) && (
+                <img 
+                    src={itemImage} 
+                    loading="lazy" 
+                    alt="" 
+                    className="position-absolute inset-0 w-100 h-100 object-fit-contain" 
+                />
+            )}
             { (itemCount > itemCountMinimum) &&
                 <LayoutItemCountView count={ itemCount } /> }
             { (itemUniqueNumber > 0) && 
                 <>
-                    <Base fit className="unique-bg-override" style={ { backgroundImage: `url(${ itemImage })` } } />
+                    <img 
+                        src={itemImage} 
+                        loading="lazy" 
+                        alt="" 
+                        className="unique-bg-override position-absolute inset-0 w-100 h-100 object-fit-contain" 
+                    />
                     <div className="position-absolute bottom-0 unique-item-counter">
                         <LayoutLimitedEditionStyledNumberView value={ itemUniqueNumber } />
                     </div>
