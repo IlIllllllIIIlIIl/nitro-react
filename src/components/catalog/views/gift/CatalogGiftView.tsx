@@ -84,7 +84,7 @@ export const CatalogGiftView: FC<{}> = props =>
 
         if (value.length > 0)
         {
-            suggestions = allFriends.sort().filter((friend: MessengerFriend) => friend.name.includes(value));
+            suggestions = allFriends.sort().filter((friend: MessengerFriend) => friend.name.toLowerCase().includes(value.toLowerCase()));
         }
 
         setReceiverName(value);
