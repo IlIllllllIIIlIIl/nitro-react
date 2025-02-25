@@ -151,7 +151,16 @@ export const GroupMembersView: FC<{}> = props =>
             <NitroCardContentView overflow="hidden">
                 <Flex gap={ 2 }>
                     <Flex center className="group-badge">
-                        <LayoutBadgeImageView badgeCode={ membersData.badge } isGroup={ true } className="mx-auto d-block"/>
+                        <LayoutBadgeImageView
+                            badgeCode={ membersData.badge }
+                            isGroup={ true }
+                            className="mx-auto d-block"
+                            style={{
+                                backgroundImage: `url(https://i.hubba.cc/badge/${membersData.badge}.gif)`,
+                                width: '40px',
+                                height: '40px'
+                            }}
+                        />
                     </Flex>
                     <Column fullWidth gap={ 1 }>
                         <input type="text" className="form-control form-control-sm w-100" placeholder={ LocalizeText('group.members.searchinfo') } value={ searchQuery } onChange={ event => setSearchQuery(event.target.value) } />

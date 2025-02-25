@@ -144,7 +144,16 @@ export const NavigatorRoomInfoView: FC<NavigatorRoomInfoViewProps> = props =>
                                 <Text overflow="auto" style={ { maxHeight: 50 } }>{ navigatorData.enteredGuestRoom.description }</Text>
                                 { (navigatorData.enteredGuestRoom.habboGroupId > 0) &&
                                     <Flex pointer alignItems="center" gap={ 1 } onClick={ () => processAction('open_group_info') }>
-                                        <LayoutBadgeImageView className="flex-none" badgeCode={ navigatorData.enteredGuestRoom.groupBadgeCode } isGroup={ true } />
+                                        <LayoutBadgeImageView
+                                            className="flex-none"
+                                            badgeCode={ navigatorData.enteredGuestRoom.groupBadgeCode }
+                                            isGroup={ true }
+                                            style={{
+                                                backgroundImage: `url(https://i.hubba.cc/badge/${navigatorData.enteredGuestRoom.groupBadgeCode}.gif)`,
+                                                width: '40px',
+                                                height: '40px'
+                                            }}
+                                        />
                                         <Text underline>
                                             { LocalizeText('navigator.guildbase', [ 'groupName' ], [ navigatorData.enteredGuestRoom.groupName ]) }
                                         </Text>

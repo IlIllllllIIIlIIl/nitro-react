@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
 import { LocalizeBadgeName, LocalizeText, UnseenItemCategory } from '../../../../api';
 import { AutoGrid, Button, Column, Flex, Grid, LayoutBadgeImageView, Text } from '../../../../common';
 import { useInventoryBadges, useInventoryUnseenTracker } from '../../../../hooks';
@@ -37,7 +38,7 @@ export const InventoryBadgeView: FC<{}> = props =>
     return (
         <Grid>
             <Column size={ 7 } overflow="hidden">
-                <div className="input-group mb-2">
+                <Flex gap={ 1 }>
                     <input 
                         type="text" 
                         className="form-control form-control-sm" 
@@ -45,7 +46,10 @@ export const InventoryBadgeView: FC<{}> = props =>
                         value={ searchQuery } 
                         onChange={ event => setSearchQuery(event.target.value) }
                     />
-                </div>
+                    <Button variant="primary">
+                        <FaSearch className="fa-icon" />
+                    </Button>
+                </Flex>
                 <AutoGrid columnCount={ 4 }>
                     { badgeCodes && (badgeCodes.length > 0) && badgeCodes
                         .filter(badgeCode => !searchQuery || LocalizeBadgeName(badgeCode).toLowerCase().includes(searchQuery.toLowerCase()))
@@ -70,7 +74,9 @@ export const InventoryBadgeView: FC<{}> = props =>
                             <LayoutBadgeImageView shrink badgeCode={ selectedBadgeCode } />
                             <Text>{ LocalizeBadgeName(selectedBadgeCode) }</Text>
                         </Flex>
-                        <Button variant={ (isWearingBadge(selectedBadgeCode) ? 'danger' : 'success') } disabled={ !isWearingBadge(selectedBadgeCode) && !canWearBadges() } onClick={ event => toggleBadge(selectedBadgeCode) }>{ LocalizeText(isWearingBadge(selectedBadgeCode) ? 'inventory.badges.clearbadge' : 'inventory.badges.wearbadge') }</Button>
+                        <Button variant={ (isWearingBadge(selectedBadgeCode) ? 'danger' : 'success') } disabled={ !isWearingBadge(selectedBadgeCode) && !canWearBadges() } onClick={ event => toggleBadge(selectedBadgeCode) }>
+                            { LocalizeText(isWearingBadge(selectedBadgeCode) ? 'inventory.badges.clearbadge' : 'inventory.badges.wearbadge') }
+                        </Button>
                     </Column> }
             </Column>
         </Grid>
