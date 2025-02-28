@@ -152,6 +152,22 @@
     width: $messenger-width;
     height: $messenger-height;
 
+    .online-status {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+
+        &.online {
+            background-color: #4CAF50;
+        }
+
+        &.offline {
+            background-color: #9e9e9e;
+        }
+    }
+
     .layout-grid-item {
         min-height: 50px;
     }
@@ -195,6 +211,18 @@
 
     .chat-messages {
         overflow-y: auto;
+
+        .status-message {
+            margin: 8px 0;
+            padding: 6px 12px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+            border-radius: 12px;
+            display: block;
+            width: 100%;
+        }
 
         .message-avatar {
             position: relative;

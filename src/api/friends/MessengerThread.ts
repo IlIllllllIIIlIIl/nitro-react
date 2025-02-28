@@ -7,6 +7,7 @@ import { MessengerThreadChatGroup } from './MessengerThreadChatGroup';
 export class MessengerThread
 {
     public static MESSAGE_RECEIVED: string = 'MT_MESSAGE_RECEIVED';
+    public static STATUS_CHANGED: string = 'MT_STATUS_CHANGED';
     public static THREAD_ID: number = 0;
 
     private _threadId: number;
@@ -62,6 +63,16 @@ export class MessengerThread
     public setRead(): void
     {
         this._unreadCount = 0;
+    }
+
+    public addStatusNotification(message: string): void
+    {
+        const group = new MessengerThreadChatGroup(0);
+        const chat = new MessengerThreadChat(0, message, 0, null, MessengerThreadChat.STATUS_NOTIFICATION);
+        group.addChat(chat);
+        this._groups.push(group);
+        this._lastUpdated = new Date();
+        window.dispatchEvent(new CustomEvent(MessengerThread.MESSAGE_RECEIVED));
     }
 
     public get threadId(): number

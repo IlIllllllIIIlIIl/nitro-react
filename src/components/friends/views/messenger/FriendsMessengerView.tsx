@@ -14,6 +14,8 @@ export const FriendsMessengerView: FC<{}> = props =>
     const { visibleThreads = [], activeThread = null, getMessageThread = null, sendMessage = null, setActiveThreadId = null, closeThread = null } = useMessenger();
     const { report = null } = useHelp();
     const messagesBox = useRef<HTMLDivElement>();
+    const statusRef = useRef<Map<number, boolean>>(new Map());
+    const [forceUpdate, setForceUpdate] = useState({});
 
     const followFriend = () => (activeThread && activeThread.participant && SendMessageComposer(new FollowFriendMessageComposer(activeThread.participant.id)));
     const openProfile = () => (activeThread && activeThread.participant && GetUserProfile(activeThread.participant.id));
@@ -80,6 +82,50 @@ export const FriendsMessengerView: FC<{}> = props =>
         messagesBox.current.scrollTop = messagesBox.current.scrollHeight;
     }, [ isVisible, activeThread ]);
 
+    // Monitor status changes
+    useEffect(() => {
+        let isMounted = true;
+        
+        const updateStatus = () => {
+            if (!isMounted || !activeThread?.participant) return;
+
+            const participant = activeThread.participant;
+            const currentOnline = participant.online;
+            const storedStatus = statusRef.current.get(participant.id);
+
+            // First time seeing this friend
+            if (storedStatus === undefined) {
+                statusRef.current.set(participant.id, currentOnline);
+                return;
+            }
+
+            // Status changed
+            if (storedStatus !== currentOnline) {
+                if (isMounted) {
+                    activeThread.addStatusNotification(
+                        `${participant.name} ist ${currentOnline ? 'online' : 'offline'} gegangen.`
+                    );
+                    statusRef.current.set(participant.id, currentOnline);
+                    setForceUpdate({}); // Force re-render
+                    
+                    if (messagesBox.current) {
+                        setTimeout(() => {
+                            if (isMounted && messagesBox.current) {
+                                messagesBox.current.scrollTop = messagesBox.current.scrollHeight;
+                            }
+                        }, 50);
+                    }
+                }
+            }
+        };
+
+        updateStatus();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [activeThread?.participant?.online]);
+
     useEffect(() =>
     {
         if(isVisible && !activeThread)
@@ -138,7 +184,7 @@ export const FriendsMessengerView: FC<{}> = props =>
                     <Column size={ 8 } overflow="hidden">
                         { activeThread &&
                             <>
-                                <Text bold center>{ LocalizeText('messenger.window.separator', [ 'FRIEND_NAME' ], [ activeThread.participant.name ]) }</Text>
+                                <Text center bold>{ LocalizeText('messenger.window.separator', [ 'FRIEND_NAME' ], [ activeThread.participant.name ]) }</Text>
                                 <Flex alignItems="center" justifyContent="between" gap={ 1 }>
                                     <Flex gap={ 1 }>
                                         <ButtonGroup>

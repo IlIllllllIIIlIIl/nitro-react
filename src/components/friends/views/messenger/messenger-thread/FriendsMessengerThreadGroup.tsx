@@ -40,6 +40,10 @@ export const FriendsMessengerThreadGroup: FC<{ thread: MessengerThread, group: M
                                         <Base className="messenger-notification-icon flex-shrink-0" />
                                         <Base>{ (LocalizeText('messenger.invitation') + ' ') }{ chat.message }</Base>
                                     </Flex> }
+                                { (chat.type === MessengerThreadChat.STATUS_NOTIFICATION) &&
+                                    <Base className="status-message">
+                                        { chat.message }
+                                    </Base> }
                             </Base>
                         </Flex>
                     );
