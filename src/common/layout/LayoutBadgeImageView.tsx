@@ -102,14 +102,18 @@ export const LayoutBadgeImageView: FC<LayoutBadgeImageViewProps> = props =>
     }, [ badgeCode, isGroup ]);
 
     return (
-        <Base classNames={ getClassNames } style={ getStyle } { ...rest }>
-            <img
-                src={ (isGroup) ? imageElement?.src : GetConfiguration<string>('badge.asset.url').replace('%badgename%', badgeCode.toString()) }
-                style={ getImgStyle }
+        <Base classNames={ getClassNames } style={
+            isGroup ?
+            { ...getStyle, backgroundImage: `url(https://i.hubba.cc/badge/${badgeCode}.gif)`} :
+            { ...getStyle, display: 'flex', justifyContent: 'center', alignItems: 'center' }
+        } { ...rest }>
+            {!isGroup && <img
+                src={GetConfiguration<string>('badge.asset.url').replace('%badgename%', badgeCode.toString())}
+                style={getImgStyle}
                 loading="lazy"
-                alt={ isGroup ? customTitle : LocalizeBadgeName(badgeCode) }
-            />
-            { (showInfo && GetConfiguration<boolean>('badge.descriptions.enabled', true)) &&
+                alt={LocalizeBadgeName(badgeCode)}
+            />}
+            {(showInfo && GetConfiguration<boolean>('badge.descriptions.enabled', true)) &&
                 <Base className="badge-information text-black py-1 px-2 small">
                     <div className="fw-bold mb-1">{ isGroup ? customTitle : LocalizeBadgeName(badgeCode) }</div>
                     <div>{ isGroup ? LocalizeText('group.badgepopup.body') : LocalizeBadgeDescription(badgeCode) }</div>
