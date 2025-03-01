@@ -113,40 +113,40 @@ const useAvatarInfoWidgetState = () =>
         // roomSession.userDataManager.requestPetInfo(petData.id);
     }
 
-    useRoomSessionManagerEvent<RoomSessionUserDataUpdateEvent>(RoomSessionUserDataUpdateEvent.USER_DATA_UPDATED, event =>
-    {
-        if(!event.addedUsers.length) return;
+   useRoomSessionManagerEvent<RoomSessionUserDataUpdateEvent>(RoomSessionUserDataUpdateEvent.USER_DATA_UPDATED, event => {
+       if (!event.addedUsers.length) return;
 
-        let addedNameBubbles: AvatarInfoName[] = [];
+       const currentUserId = GetSessionDataManager().userId;
 
-        event.addedUsers.forEach(user =>
-        {
-            if(user.webID === GetSessionDataManager().userId) return;
+       const newFriend = event.addedUsers.find(user =>
+           user &&
+           user.webID !== currentUserId &&
+           friends.some(friend => friend.id === user.webID)
+       );
 
-            const addedNameBubblesUserFriend = friends.find(friend => (friend.id === user.webID));
-            if (addedNameBubblesUserFriend)
-            {
-                addedNameBubbles.push(new AvatarInfoName(user.roomIndex, RoomObjectCategory.UNIT, user.webID, user.name, user.type, true, addedNameBubblesUserFriend.relationshipStatus));
-            }
-        });
+       if (newFriend) {
+           const userFriend = friends.find(friend => friend.id === newFriend.webID);
+           if (!userFriend) return;
 
-        if(!addedNameBubbles.length) return;
+           const bubble = new AvatarInfoName(
+               newFriend.roomIndex,
+               RoomObjectCategory.UNIT,
+               newFriend.webID,
+               newFriend.name,
+               newFriend.type,
+               true,
+               userFriend.relationshipStatus
+           );
 
-        setNameBubbles(prevValue =>
-        {
-            const newValue = [ ...prevValue ];
+           setNameBubbles([bubble]);
 
-            addedNameBubbles.forEach(bubble =>
-            {
-                const oldIndex = newValue.findIndex(oldBubble => (oldBubble.id === bubble.id));
-
-                if(oldIndex > -1) newValue.splice(oldIndex, 1);
-
-                newValue.push(bubble);
-            });
-
-            return newValue;
-        });
+           setTimeout(() => {
+               setNameBubbles(prev => {
+                   const newBubbles = prev.filter(b => b !== bubble);
+                   return newBubbles;
+               });
+           }, 5000);
+       }
     });
 
     useRoomSessionManagerEvent<RoomSessionPetInfoUpdateEvent>(RoomSessionPetInfoUpdateEvent.PET_INFO, event =>
@@ -301,7 +301,7 @@ const useAvatarInfoWidgetState = () =>
         {
             let index = nameBubbles.findIndex(bubble => (bubble.roomIndex === event.id));
 
-            if(index > -1) setNameBubbles(prevValue => prevValue.filter(bubble => (bubble.roomIndex === event.id)));
+            if(index > -1) setNameBubbles(prevValue => prevValue.filter(bubble => (bubble.roomIndex !== event.id)));
 
             index = productBubbles.findIndex(bubble => (bubble.id === event.id));
 
@@ -334,21 +334,76 @@ const useAvatarInfoWidgetState = () =>
         if(!avatarInfo) return;
 
         setActiveNameBubble(null);
-        setNameBubbles([]);
         setProductBubbles([]);
     }, [ avatarInfo ]);
 
     useEffect(() =>
     {
-        if(!activeNameBubble) return;
-
-        setNameBubbles([]);
-    }, [ activeNameBubble ]);
-
-    useEffect(() =>
-    {
         roomSession.isDecorating = isDecorating;
     }, [ roomSession, isDecorating ]);
+
+    const [lastProcessedRoomId, setLastProcessedRoomId] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (!roomSession || !roomSession.userDataManager) return;
+
+        if (lastProcessedRoomId === roomSession.roomId) return;
+
+        const currentUserId = GetSessionDataManager().userId;
+
+        const timeoutId = setTimeout(() => {
+            const newBubbles: AvatarInfoName[] = [];
+            const currentTime = Date.now();
+
+            const roomObjects = GetRoomEngine().getRoomObjects(roomSession.roomId, RoomObjectCategory.UNIT);
+
+            const selfUser = roomSession.userDataManager.getUserDataByIndex(roomSession.ownRoomIndex);
+            if (selfUser && selfUser.webID === currentUserId) {
+                const selfBubble = AvatarInfoUtilities.getObjectName(roomSession.ownRoomIndex, RoomObjectCategory.UNIT);
+                if (selfBubble) {
+                    (selfBubble as any).createdAt = currentTime;
+                    newBubbles.push(selfBubble);
+                }
+            }
+
+            roomObjects.forEach(roomObject => {
+                const userData = roomSession.userDataManager.getUserDataByIndex(roomObject.id);
+                
+                if (!userData || userData.type !== RoomObjectType.USER || !userData.webID || userData.webID === currentUserId) {
+                    return;
+                }
+
+                const isFriend = friends.some(friend => friend && friend.id === userData.webID);
+                if (isFriend) {
+                    const userFriend = friends.find(friend => friend && friend.id === userData.webID);
+                    if (userFriend) {
+                        const bubble = new AvatarInfoName(
+                            userData.roomIndex,
+                            RoomObjectCategory.UNIT,
+                            userData.webID,
+                            userData.name,
+                            userData.type,
+                            true,
+                            userFriend.relationshipStatus || 0
+                        );
+                        (bubble as any).createdAt = currentTime;
+                        newBubbles.push(bubble);
+                    }
+                }
+            });
+
+            if (newBubbles.length > 0) {
+                setNameBubbles(newBubbles);
+                setTimeout(() => {
+                    setNameBubbles([]);
+                }, 5000);
+            }
+
+            setLastProcessedRoomId(roomSession.roomId);
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [roomSession, friends]);
 
     return { avatarInfo, setAvatarInfo, activeNameBubble, setActiveNameBubble, nameBubbles, productBubbles, confirmingProduct, isDecorating, setIsDecorating, removeNameBubble, removeProductBubble, updateConfirmingProduct, getObjectName };
 }
