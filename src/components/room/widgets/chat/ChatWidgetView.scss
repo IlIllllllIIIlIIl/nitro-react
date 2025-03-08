@@ -686,6 +686,166 @@
             }
         }
 
+        &.bubble-100 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_100.png');
+
+            border-image-slice: 15 10 15 39 fill;
+            border-image-width: 15px 10px 15px 39px;
+            border-image-outset: 7px 1px 2px 5px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_100_pointer.png');
+            }
+        }
+
+        &.bubble-101 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_101.png');
+
+            border-image-slice: 15 10 16 39 fill;
+            border-image-width: 15px 10px 16px 39px;
+            border-image-outset: 8px 1px 4px 5px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_101_pointer.png');
+            }
+        }
+
+        &.bubble-102 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_102.png');
+
+            border-image-slice: 15 10 16 39 fill;
+            border-image-width: 15px 10px 16px 39px;
+            border-image-outset: 9px 1px 4px 3px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_102_pointer.png');
+            }
+        }
+
+        &.bubble-103 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_103.png');
+
+            border-image-slice: 15 10 14 37 fill;
+            border-image-width: 15px 10px 14px 37px;
+            border-image-outset: 7px 0px 2px 1px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_103_pointer.png');
+            }
+        }
+
+        &.bubble-104 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_104.png');
+
+            border-image-slice: 15 10 14 37 fill;
+            border-image-width: 15px 10px 14px 37px;
+            border-image-outset: 7px 0px 2px 1px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_104_pointer.png');
+            }
+        }
+
+        &.bubble-105 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_105.png');
+
+            border-image-slice: 15 10 14 37 fill;
+            border-image-width: 15px 10px 14px 37px;
+            border-image-outset: 7px 0px 2px 1px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_105_pointer.png');
+            }
+        }
+
+        &.bubble-106 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_106.png');
+
+            border-image-slice: 15 10 14 37 fill;
+            border-image-width: 15px 10px 14px 37px;
+            border-image-outset: 7px 0px 2px 1px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_106_pointer.png');
+            }
+        }
+
+        &.bubble-107 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_107.png');
+
+            border-image-slice: 6 10 14 37 fill;
+            border-image-width: 6px 10px 14px 37px;
+            border-image-outset: 2px 0px 0px 0px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_107_pointer.png');
+            }
+        }
+
+        &.bubble-108 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_108.png');
+
+            border-image-slice: 6 10 14 37 fill;
+            border-image-width: 6px 10px 14px 37px;
+            border-image-outset: 2px 0px 0px 0px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_108_pointer.png');
+            }
+        }
+
+        &.bubble-109 {
+            border-image-source: url('@/assets/images/chat/chatbubbles/bubble_109.png');
+
+            border-image-slice: 15 10 14 37 fill;
+            border-image-width: 15px 10px 14px 37px;
+            border-image-outset: 9px 0px 2px 4px;
+
+            .chat-content {
+                margin-left: 29px;
+            }
+
+            .pointer {
+                background: url('@/assets/images/chat/chatbubbles/bubble_109_pointer.png');
+            }
+        }
+
         .user-container {
             z-index: 3;
             display: flex;
