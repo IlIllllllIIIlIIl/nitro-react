@@ -111,7 +111,6 @@ export const LayoutBadgeImageView: FC<LayoutBadgeImageViewProps> = props =>
                 src={GetConfiguration<string>('badge.asset.url').replace('%badgename%', badgeCode.toString())}
                 style={getImgStyle}
                 loading="lazy"
-                alt={LocalizeBadgeName(badgeCode)}
             />}
             {(showInfo && GetConfiguration<boolean>('badge.descriptions.enabled', true)) &&
                 <Base className="badge-information text-black py-1 px-2 small">
