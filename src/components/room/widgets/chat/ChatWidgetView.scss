@@ -697,6 +697,13 @@
                 margin-left: 29px;
             }
 
+            .user-container {
+                .user-image {
+                    top: -14px;
+                    left: -5.25px;
+                }
+            }
+
             .pointer {
                 background: url('@/assets/images/chat/chatbubbles/bubble_100_pointer.png');
             }
@@ -711,6 +718,13 @@
 
             .chat-content {
                 margin-left: 29px;
+            }
+
+            .user-container {
+                .user-image {
+                    top: -14px;
+                    left: -5.25px;
+                }
             }
 
             .pointer {
@@ -729,6 +743,12 @@
                 margin-left: 29px;
             }
 
+            .user-container {
+                .user-image {
+                    left: -6.25px;
+                }
+            }
+
             .pointer {
                 background: url('@/assets/images/chat/chatbubbles/bubble_102_pointer.png');
             }
@@ -743,6 +763,12 @@
 
             .chat-content {
                 margin-left: 29px;
+            }
+
+            .user-container {
+                .user-image {
+                    left: -5.25px;
+                }
             }
 
             .pointer {
@@ -761,6 +787,12 @@
                 margin-left: 29px;
             }
 
+            .user-container {
+                .user-image {
+                    left: -5.25px;
+                }
+            }
+
             .pointer {
                 background: url('@/assets/images/chat/chatbubbles/bubble_104_pointer.png');
             }
@@ -775,6 +807,12 @@
 
             .chat-content {
                 margin-left: 29px;
+            }
+
+            .user-container {
+                .user-image {
+                    left: -5.25px;
+                }
             }
 
             .pointer {
@@ -793,6 +831,12 @@
                 margin-left: 29px;
             }
 
+            .user-container {
+                .user-image {
+                    left: -5.25px;
+                }
+            }
+
             .pointer {
                 background: url('@/assets/images/chat/chatbubbles/bubble_106_pointer.png');
             }
@@ -807,6 +851,12 @@
 
             .chat-content {
                 margin-left: 29px;
+            }
+
+            .user-container {
+                .user-image {
+                    top: -14px;
+                }
             }
 
             .pointer {
@@ -825,6 +875,12 @@
                 margin-left: 29px;
             }
 
+            .user-container {
+                .user-image {
+                    top: -14px;
+                }
+            }
+
             .pointer {
                 background: url('@/assets/images/chat/chatbubbles/bubble_108_pointer.png');
             }
@@ -839,6 +895,12 @@
 
             .chat-content {
                 margin-left: 29px;
+            }
+
+            .user-container {
+                .user-image {
+                    left: -6.25px;
+                }
             }
 
             .pointer {
@@ -862,8 +924,8 @@
                 width: 45px;
                 height: 65px;
                 background-repeat: no-repeat;
-                background-position: center;
-                transform: scale(0.5);
+                background-position: center top;
+                background-size: cover;
                 overflow: hidden;
                 image-rendering: initial;
             }
