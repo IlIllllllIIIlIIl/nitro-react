@@ -205,7 +205,8 @@ const useChatWidgetState = () =>
             chatType,
             styleId,
             imageUrl,
-            color);
+            color,
+            userType);
 
         setChatMessages(prevValue => [ ...prevValue, chatMessage ]);
         addChatEntry({ id: -1, webId: userData.webID, entityId: userData.roomIndex, name: username, imageUrl, style: styleId, chatType: chatType, entityType: userData.type, message: formattedText, timestamp: ChatHistoryCurrentDate(), type: ChatEntryType.TYPE_CHAT, roomId: roomSession.roomId, color });

@@ -1,4 +1,4 @@
-import { RoomChatSettings, RoomObjectCategory } from '@nitrots/nitro-renderer';
+import { RoomChatSettings, RoomObjectCategory, RoomObjectType } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { ChatBubbleMessage, GetRoomEngine } from '../../../../api';
 
@@ -82,7 +82,7 @@ export const ChatWidgetMessageView: FC<ChatWidgetMessageViewProps> = props =>
             <div className={ `chat-bubble bubble-${ chat.styleId } type-${ chat.type }` } style={ { maxWidth: getBubbleWidth } }>
                 <div className="user-container">
                     { chat.imageUrl && (chat.imageUrl.length > 0) &&
-                        <div className="user-image" style={ { backgroundImage: `url(${ chat.imageUrl })` } } /> }
+                        <div className={ chat.userType === RoomObjectType.PET ? "pet-image" : "user-image" } style={ { backgroundImage: `url(${ chat.imageUrl })` } } /> }
                 </div>
                 <div className="chat-content">
                     <b className="username mr-1" dangerouslySetInnerHTML={ { __html: `${ chat.username }: ` } } />

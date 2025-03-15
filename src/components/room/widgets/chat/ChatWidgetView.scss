@@ -929,6 +929,19 @@
                 overflow: hidden;
                 image-rendering: initial;
             }
+
+            .pet-image {
+                position: absolute;
+                top: -15px;
+                left: -9.25px;
+                width: 45px;
+                height: 65px;
+                background-repeat: no-repeat;
+                background-position: center top;
+                transform: scale(0.5);
+                overflow: hidden;
+                image-rendering: initial;
+            }
         }
 
         .chat-content {
