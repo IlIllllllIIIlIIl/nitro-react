@@ -30,11 +30,6 @@ export const FriendsMessengerThreadGroup: FC<{ thread: MessengerThread, group: M
                     return (
                         <Flex key={ index } fullWidth gap={ 2 } justifyContent="start">
                             <Base className="w-100 text-break">
-                                { (chat.type === MessengerThreadChat.SECURITY_NOTIFICATION) &&
-                                    <Flex gap={ 2 } alignItems="center" className="bg-light rounded mb-2 px-2 py-1 small text-muted">
-                                        <Base className="nitro-friends-spritesheet icon-warning flex-shrink-0" />
-                                        <Base>{ chat.message }</Base>
-                                    </Flex> }
                                 { (chat.type === MessengerThreadChat.ROOM_INVITE) &&
                                     <Flex gap={ 2 } alignItems="center" className="bg-light rounded mb-2 px-2 py-1 small text-black">
                                         <Base className="messenger-notification-icon flex-shrink-0" />
@@ -53,24 +48,24 @@ export const FriendsMessengerThreadGroup: FC<{ thread: MessengerThread, group: M
     }
     
     return (
-        <Flex fullWidth justifyContent={ isOwnChat ? 'end' : 'start' } gap={ 2 }>
-            <Base shrink className="message-avatar">
-                { ((group.type === MessengerGroupType.PRIVATE_CHAT) && !isOwnChat) &&
-                    <LayoutAvatarImageView figure={ thread.participant.figure } direction={ 2 } /> }
-                { (groupChatData && !isOwnChat) &&
-                    <LayoutAvatarImageView figure={ groupChatData.figure } direction={ 2 } /> }
+        <Flex fullWidth column alignItems={ isOwnChat ? 'end' : 'start' }>
+            <Base className={ 'bg-light text-black mb-1 messages-group-' + (isOwnChat ? 'own' : 'left') }>
+                { group.chats.map((chat, index) => (
+                    <Base key={ index } className="text-break">{ chat.message }</Base>
+                )) }
             </Base>
-            <Base className={ 'bg-light text-black border-radius mb-2 rounded py-1 px-2 messages-group-' + (isOwnChat ? 'right' : 'left') }>
-                <Base className="fw-bold">
-                    { isOwnChat && GetSessionDataManager().userName }
-                    { !isOwnChat && (groupChatData ? groupChatData.username : thread.participant.name) }
-                </Base>
-                { group.chats.map((chat, index) => <Base key={ index } className="text-break">{ chat.message }</Base>) }
+            <Base className="small text-muted" style={{
+                paddingLeft: isOwnChat ? '0.5rem' : 'unset',
+                paddingRight: isOwnChat ? 'unset' : '0.5rem'
+            }}>
+                { group.chats[0].date.toLocaleString([], {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) }
             </Base>
-            { isOwnChat &&
-                <Base shrink className="message-avatar">
-                    <LayoutAvatarImageView figure={ GetSessionDataManager().figure } direction={ 4 } />
-                </Base> }
         </Flex>
     );
 }

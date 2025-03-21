@@ -237,35 +237,28 @@
             }
         }
 
-        .messages-group-left {
+        .messages-group-left,
+        .messages-group-own {
             position: relative;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+        }
 
+        .messages-group-left {
+            border-bottom-left-radius: 4px;
+            
             &:before {
-                position: absolute;
-                content: ' ';
-                width: 0;
-                height: 0;
-                border-right: 8px solid rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
-                border-top: 8px solid transparent;
-                border-bottom: 8px solid transparent;
-                top: 10px;
-                left: -8px;
+                display: none;
             }
         }
 
-        .messages-group-right {
-            position: relative;
-
+        .messages-group-own {
+            border-bottom-right-radius: 4px;
+            background-color: #1e7295 !important;
+            color: #ffffff !important;
+            
             &:before {
-                position: absolute;
-                content: ' ';
-                width: 0;
-                height: 0;
-                border-left: 8px solid rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
-                border-top: 8px solid transparent;
-                border-bottom: 8px solid transparent;
-                top: 10px;
-                right: -8px;
+                display: none;
             }
         }
     }
